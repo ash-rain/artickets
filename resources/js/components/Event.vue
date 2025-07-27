@@ -1,8 +1,10 @@
 <template>
     <div v-if="event">
+        <header class="mb-6">
+            <img :src="event.image" alt="Event Image" class="w-full h-64 object-cover rounded-lg mb-4">
+        </header>
         <h2 class="text-2xl font-bold mb-4">{{ event.title }}</h2>
         <div class="mb-4">
-            <p class="text-gray-700"><span class="font-semibold">Venue:</span> {{ event.venue.name }}</p>
             <p class="text-gray-700"><span class="font-semibold">Date:</span> {{ event.date }}</p>
             <p class="text-gray-700"><span class="font-semibold">Description:</span> {{ event.description }}</p>
         </div>
@@ -16,6 +18,8 @@
                 Buy Tickets
             </router-link>
         </div>
+
+        <EventSeating :event="event" />
     </div>
     <div v-else-if="loading" class="text-center py-8">
         <p>Loading event details...</p>

@@ -74,8 +74,9 @@ class DatabaseSeeder extends Seeder
         // Create events
         Event::create([
             'venue_id' => $symphony->id,
-            'title' => 'Classical Concert',
+            'title' => 'МЕГАКОНЦЕРТ СТАРИЯТ КРИСКО в ПЛОВДИВ',
             'description' => 'An evening of classical masterpieces',
+            'image' => '/storaqe/tickets/ticket002.webp',
             'date' => now()->addDays(3), // 3 days from now
         ]);
 
@@ -83,13 +84,15 @@ class DatabaseSeeder extends Seeder
             'venue_id' => $symphony->id,
             'title' => 'Ozric Tentacles Live',
             'description' => 'Featuring contemporary artists',
+            'image' => '/storaqe/tickets/ticket003.jpg',
             'date' => now()->addDays(7), // 7 days from now
         ]);
 
         Event::create([
             'venue_id' => $symphony->id,
-            'title' => 'Jazz Night',
+            'title' => 'Kerana & Kosmonavtite',
             'description' => 'Smooth jazz with special guests',
+            'image' => '/storaqe/tickets/ticket001.webp',
             'date' => now()->addDays(10), // 10 days from now
         ]);
     }
