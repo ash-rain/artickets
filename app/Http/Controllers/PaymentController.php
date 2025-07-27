@@ -6,50 +6,66 @@ use App\Models\Payment;
 use App\Models\Seat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller
 {
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'required|string|max:20',
+        $request->validate([
+            'event_id' => 'required|exists:events,id',
             'seat_ids' => 'required|array',
             'seat_ids.*' => 'exists:seats,id',
+            'card_number' => 'required|string',
+            'expiration' => 'required|string',
+            'cvv' => 'required|string',
+            'email' => 'required|email',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
 
         try {
             DB::beginTransaction();
 
-            $payments = [];
-            foreach ($request->seat_ids as $seatId) {
-                $seat = Seat::findOrFail($seatId);
+            // Check seat availability
+            $seats = Seat::whereIn('id', $request->seat_ids)
+                ->where('available', true)
+                ->lockForUpdate()
+                ->get();
 
-                if ($seat->payment) {
-                    return response()->json(['error' => "Seat $seatId is already taken"], 409);
-                }
-
-                $payment = Payment::create([
-                    'seat_id' => $seatId,
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'phone' => $request->phone,
-                ]);
-
-                $payments[] = $payment;
+            if ($seats->count() !== count($request->seat_ids)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'One or more seats are no longer available'
+                ], 400);
             }
 
+            // Create payment record
+            $payment = Payment::create([
+                'event_id' => $request->event_id,
+                'amount' => $seats->sum('price'),
+                'card_number' => $request->card_number,
+                'expiration' => $request->expiration,
+                'cvv' => $request->cvv,
+                'email' => $request->email,
+            ]);
+
+            // Update seats to mark as unavailable
+            Seat::whereIn('id', $request->seat_ids)->update([
+                'available' => false,
+                'payment_id' => $payment->id
+            ]);
+
             DB::commit();
-            return response()->json($payments, 201);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment processed successfully',
+                'payment_id' => $payment->id
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment processing failed: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

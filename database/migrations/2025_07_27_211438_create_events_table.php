@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('venue_id')->constrained()->onDelete('cascade');
             $table->string('title');
+            $table->text('description');
+            $table->dateTime('date')->nullable(); // Added date field for event date
             $table->timestamps();
         });
     }

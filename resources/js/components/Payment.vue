@@ -1,200 +1,210 @@
 <template>
-    <div class="max-w-lg mx-auto">
-        <h2 class="text-2xl font-bold mb-6">Checkout</h2>
+    <div v-if="event">
+        <h2 class="text-2xl font-bold mb-4">Purchase Tickets for {{ event.title }}</h2>
 
-        <div v-if="loading" class="text-center py-8">
-            <p>Loading seat information...</p>
-        </div>
-
-        <div v-else>
-            <div v-if="seats.length === 0" class="text-center py-8">
-                <p>No seats selected. Please go back and select seats.</p>
-                <router-link to="/" class="text-blue-500 hover:underline mt-4 inline-block">Back to events</router-link>
-            </div>
-
-            <div v-else>
-                <div class="mb-8">
-                    <h3 class="text-xl font-semibold mb-4">Selected Seats</h3>
-                    <ul class="grid grid-cols-3 gap-2">
-                        <li v-for="seat in seats" :key="seat.id" class="bg-gray-100 p-3 rounded">
-                            Section {{ seat.section.name }}, Row {{ seat.row }}, Seat {{ seat.column }} - ${{
-                            seat.section.price }}
-                        </li>
-                    </ul>
-                    <p class="text-xl font-bold mt-4">Total: ${{ totalPrice }}</p>
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Select Seats</label>
+                <div class="grid grid-cols-5 gap-2">
+                    <div v-for="seat in event.venue.sections[0].seats" :key="seat.id"
+                        class="p-2 border rounded text-center cursor-pointer hover:bg-gray-100" :class="{
+                            'bg-green-200': selectedSeats.includes(seat.id),
+                            'bg-red-200': !seat.available
+                        }" @click="toggleSeat(seat)">
+                        Seat {{ seat.row }}{{ seat.number }}
+                    </div>
                 </div>
+            </div>
 
-                <form @submit.prevent="submitPayment">
-                    <div class="mb-4">
-                        <label class="block text-gray-700 mb-2" for="name">Full Name</label>
-                        <input v-model="form.name" type="text" id="name" class="w-full px-3 py-2 border rounded-md"
-                            :class="{ 'border-red-500': errors.name }">
-                        <p v-if="errors.name" class="text-red-500 text-sm mt-1">{{ errors.name }}</p>
-                    </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Card Number</label>
+                <input type="text" class="w-full px-3 py-2 border rounded" placeholder="1234 5678 9012 3456"
+                    v-model="cardNumber" />
+            </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 mb-2" for="email">Email</label>
-                        <input v-model="form.email" type="email" id="email" class="w-full px-3 py-2 border rounded-md"
-                            :class="{ 'border-red-500': errors.email }">
-                        <p v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
-                    </div>
+            <div class="flex space-x-4 mb-6">
+                <div class="w-1/2">
+                    <label class="block text-gray-700 font-semibold mb-2">Expiration</label>
+                    <input type="text" class="w-full px-3 py-2 border rounded" placeholder="MM/YY"
+                        v-model="expiration" />
+                </div>
+                <div class="w-1/2">
+                    <label class="block text-gray-700 font-semibold mb-2">CVV</label>
+                    <input type="text" class="w-full px-3 py-2 border rounded" placeholder="123" v-model="cvv" />
+                </div>
+            </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 mb-2" for="phone">Phone</label>
-                        <input v-model="form.phone" type="tel" id="phone" class="w-full px-3 py-2 border rounded-md"
-                            :class="{ 'border-red-500': errors.phone }">
-                        <p v-if="errors.phone" class="text-red-500 text-sm mt-1">{{ errors.phone }}</p>
-                    </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                <input type="email" class="w-full px-3 py-2 border rounded" placeholder="you@example.com"
+                    v-model="email" />
+            </div>
 
-                    <div class="mb-6">
-                        <label class="flex items-center">
-                            <input v-model="form.acceptedTerms" type="checkbox" class="form-checkbox"
-                                :class="{ 'border-red-500': errors.acceptedTerms }">
-                            <span class="ml-2">I accept the terms and conditions</span>
-                        </label>
-                        <p v-if="errors.acceptedTerms" class="text-red-500 text-sm mt-1">{{ errors.acceptedTerms }}</p>
-                    </div>
-
-                    <button type="submit"
-                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg w-full transition duration-200"
-                        :disabled="processing">
-                        <span v-if="processing">Processing...</span>
-                        <span v-else>Pay Now</span>
-                    </button>
-                </form>
+            <div class="flex justify-between items-center">
+                <router-link :to="`/event/${event.id}`"
+                    class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                    Back to Event
+                </router-link>
+                <button class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition"
+                    @click="processPayment" :disabled="processing">
+                    <span v-if="processing">Processing...</span>
+                    <span v-else>Complete Purchase (${{ totalPrice }})</span>
+                </button>
             </div>
         </div>
+
+        <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {{ error }}
+        </div>
+
+        <div v-if="success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+            Payment successful! Your tickets have been reserved.
+        </div>
+    </div>
+    <div v-else-if="loading" class="text-center py-8">
+        <p>Loading payment details...</p>
+    </div>
+    <div v-else class="text-center py-8">
+        <p>Event not found</p>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
+import { defineComponent, ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import axios from 'axios'
+
+interface Seat {
+    id: number
+    row: string
+    number: number
+    available: boolean
+    price: number
+}
+
+interface Section {
+    id: number
+    name: string
+    seats: Seat[]
+}
+
+interface Venue {
+    id: number
+    name: string
+    sections: Section[]
+}
+
+interface Event {
+    id: number
+    title: string
+    venue: Venue
+}
 
 export default defineComponent({
     name: 'Payment',
     setup() {
-        const route = useRoute();
-        const router = useRouter();
-        const seats = ref<any[]>([]);
-        const loading = ref(true);
-        const processing = ref(false);
-
-        const form = ref({
-            name: '',
-            email: '',
-            phone: '',
-            acceptedTerms: false
-        });
-
-        const errors = ref({
-            name: '',
-            email: '',
-            phone: '',
-            acceptedTerms: ''
-        });
+        const route = useRoute()
+        const event = ref<Event | null>(null)
+        const loading = ref(true)
+        const selectedSeats = ref<number[]>([])
+        const cardNumber = ref('')
+        const expiration = ref('')
+        const cvv = ref('')
+        const email = ref('')
+        const processing = ref(false)
+        const error = ref('')
+        const success = ref(false)
 
         const totalPrice = computed(() => {
-            return seats.value.reduce((sum, seat) => sum + seat.section.price, 0);
-        });
+            if (!event.value) return 0
+            return selectedSeats.value.reduce((total, seatId) => {
+                const seat = event.value!.venue.sections
+                    .flatMap(s => s.seats)
+                    .find(s => s.id === seatId)
+                return total + (seat?.price || 0)
+            }, 0)
+        })
 
-        const validateForm = () => {
-            let valid = true;
-            errors.value = { name: '', email: '', phone: '', acceptedTerms: '' };
+        const toggleSeat = (seat: Seat) => {
+            if (!seat.available) return
 
-            if (!form.value.name.trim()) {
-                errors.value.name = 'Name is required';
-                valid = false;
+            const index = selectedSeats.value.indexOf(seat.id)
+            if (index > -1) {
+                selectedSeats.value.splice(index, 1)
+            } else {
+                selectedSeats.value.push(seat.id)
+            }
+        }
+
+        const processPayment = async () => {
+            if (selectedSeats.value.length === 0) {
+                error.value = 'Please select at least one seat'
+                return
             }
 
-            if (!form.value.email.trim()) {
-                errors.value.email = 'Email is required';
-                valid = false;
-            } else if (!/^\S+@\S+\.\S+$/.test(form.value.email)) {
-                errors.value.email = 'Invalid email format';
-                valid = false;
+            if (!cardNumber.value || !expiration.value || !cvv.value || !email.value) {
+                error.value = 'Please fill all payment details'
+                return
             }
 
-            if (!form.value.phone.trim()) {
-                errors.value.phone = 'Phone is required';
-                valid = false;
-            }
-
-            if (!form.value.acceptedTerms) {
-                errors.value.acceptedTerms = 'You must accept the terms and conditions';
-                valid = false;
-            }
-
-            return valid;
-        };
-
-        const submitPayment = async () => {
-            if (!validateForm()) return;
-
-            processing.value = true;
+            processing.value = true
+            error.value = ''
 
             try {
-                const payload = {
-                    name: form.value.name,
-                    email: form.value.email,
-                    phone: form.value.phone,
-                    seat_ids: seats.value.map(seat => seat.id)
-                };
+                const response = await axios.post('/api/payments', {
+                    event_id: event.value?.id,
+                    seat_ids: selectedSeats.value,
+                    card_number: cardNumber.value,
+                    expiration: expiration.value,
+                    cvv: cvv.value,
+                    email: email.value
+                })
 
-                const response = await axios.post('/api/payments', payload);
-
-                if (response.status === 201) {
-                    alert('Payment successful! Your tickets have been booked.');
-                    router.push({ name: 'Events' });
-                }
-            } catch (error: any) {
-                if (error.response) {
-                    if (error.response.status === 409) {
-                        alert('One or more seats have already been taken. Please select different seats.');
-                        router.push({ name: 'Events' });
-                    } else {
-                        alert('Payment failed: ' + (error.response.data.error || 'Please try again later'));
-                    }
+                if (response.data.success) {
+                    success.value = true
+                    // Reset form
+                    selectedSeats.value = []
+                    cardNumber.value = ''
+                    expiration.value = ''
+                    cvv.value = ''
+                    email.value = ''
                 } else {
-                    alert('Network error. Please check your connection and try again.');
+                    error.value = response.data.message || 'Payment failed'
                 }
+            } catch (err) {
+                console.error('Payment error:', err)
+                error.value = 'An error occurred during payment processing'
             } finally {
-                processing.value = false;
+                processing.value = false
             }
-        };
+        }
 
         onMounted(async () => {
-            const seatIds = route.query.seatIds ? route.query.seatIds.toString().split(',').map(Number) : [];
-
-            if (seatIds.length === 0) {
-                loading.value = false;
-                return;
-            }
-
             try {
-                // Fetch seat details with section information
-                const response = await axios.get('/api/seats', {
-                    params: { ids: seatIds.join(',') }
-                });
-                seats.value = response.data;
-            } catch (error) {
-                console.error('Error fetching seat details:', error);
-                alert('Failed to load seat information. Please try again.');
+                const response = await axios.get(`/api/events/${route.params.id}`)
+                event.value = response.data
+            } catch (err) {
+                console.error('Error loading event:', err)
             } finally {
-                loading.value = false;
+                loading.value = false
             }
-        });
+        })
 
         return {
-            seats,
+            event,
             loading,
+            selectedSeats,
+            cardNumber,
+            expiration,
+            cvv,
+            email,
             processing,
-            form,
-            errors,
+            error,
+            success,
             totalPrice,
-            submitPayment
-        };
+            toggleSeat,
+            processPayment
+        }
     }
-});
+})
 </script>

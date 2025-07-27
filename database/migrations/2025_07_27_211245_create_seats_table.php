@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('seats', function (Blueprint $table) {
             $table->id();
             $table->foreignId('section_id')->constrained()->onDelete('cascade');
-            $table->integer('row');
-            $table->integer('column');
+            $table->integer('row')->unsigned();
+            $table->integer('column')->unsigned();
             $table->timestamps();
         });
     }

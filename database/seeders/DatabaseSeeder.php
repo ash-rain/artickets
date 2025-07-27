@@ -2,64 +2,95 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\Venue;
 use App\Models\Section;
 use App\Models\Seat;
 use App\Models\Event;
-use App\Models\Payment;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
-    public function run(): void
+    public function run()
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Create venues
+        $symphony = Venue::create([
+            'name' => 'Symphony Hall',
+            'address' => '123 Music Street',
         ]);
 
-        $venue = Venue::create(['name' => 'Concert Hall']);
-
-        $sections = [];
-        for ($i = 1; $i <= 3; $i++) {
-            $sections[] = Section::create([
-                'venue_id' => $venue->id,
-                'name' => "Section $i",
-                'price' => 100 - ($i * 20) // Decreasing prices: 80, 60, 40
-            ]);
-        }
-
-        $event = Event::create([
-            'venue_id' => $venue->id,
-            'title' => 'Summer Concert'
+        // Create sections for Symphony Hall
+        $orchestra = Section::create([
+            'venue_id' => $symphony->id,
+            'name' => 'Front Orchestra',
+            'price' => 100,
         ]);
 
-        foreach ($sections as $section) {
-            for ($row = 1; $row <= 2; $row++) {
-                for ($col = 1; $col <= 10; $col++) {
-                    Seat::create([
-                        'section_id' => $section->id,
-                        'row' => $row,
-                        'column' => $col
-                    ]);
-                }
+        $standing = Section::create([
+            'venue_id' => $symphony->id,
+            'name' => 'Standing',
+            'price' => 60,
+        ]);
+
+        $balcony = Section::create([
+            'venue_id' => $symphony->id,
+            'name' => 'Balcony',
+            'price' => 75,
+        ]);
+
+        // Create seats for Front Orchestra section
+        foreach (range(1, 3) as $row) {
+            foreach (range(1, 10) as $column) {
+                Seat::create([
+                    'section_id' => $orchestra->id,
+                    'row' => $row,
+                    'column' => $column,
+                ]);
             }
         }
 
-        // Create a sample payment for demonstration
-        $seat = Seat::first();
-        Payment::create([
-            'seat_id' => $seat->id,
-            'name' => 'John Doe',
-            'email' => 'john@example.com',
-            'phone' => '1234567890'
+
+        // Create seats for Standing section
+        foreach (range(4, 7) as $row) {
+            foreach (range(1, 10) as $column) {
+                Seat::create([
+                    'section_id' => $standing->id,
+                    'row' => $row,
+                    'column' => $column,
+                ]);
+            }
+        }
+
+        // Create seats for Balcony section
+        foreach (range(8, 10) as $row) {
+            foreach (range(1, 10) as $column) {
+                Seat::create([
+                    'section_id' => $balcony->id,
+                    'row' => $row,
+                    'column' => $column,
+                ]);
+            }
+        }
+
+        // Create events
+        Event::create([
+            'venue_id' => $symphony->id,
+            'title' => 'Classical Concert',
+            'description' => 'An evening of classical masterpieces',
+            'date' => now()->addDays(3), // 3 days from now
+        ]);
+
+        Event::create([
+            'venue_id' => $symphony->id,
+            'title' => 'Ozric Tentacles Live',
+            'description' => 'Featuring contemporary artists',
+            'date' => now()->addDays(7), // 7 days from now
+        ]);
+
+        Event::create([
+            'venue_id' => $symphony->id,
+            'title' => 'Jazz Night',
+            'description' => 'Smooth jazz with special guests',
+            'date' => now()->addDays(10), // 10 days from now
         ]);
     }
 }

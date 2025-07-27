@@ -9,13 +9,13 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::with('venue.sections.seats.payment')->get();
+        $events = Event::with('venue')->get();
         return response()->json($events);
     }
 
     public function show($id)
     {
-        $event = Event::with('venue.sections.seats.payment')->findOrFail($id);
+        $event = Event::with('venue.sections.seats')->findOrFail($id);
         return response()->json($event);
     }
 }

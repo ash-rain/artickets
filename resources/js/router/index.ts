@@ -6,20 +6,20 @@ import Payment from '../components/Payment.vue';
 const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
-        name: 'Events',
+        name: 'events',
         component: Events
     },
     {
-        path: '/events/:id',
-        name: 'Event',
+        path: '/event/:id',
+        name: 'event',
         component: Event,
         props: true
     },
     {
-        path: '/payment',
-        name: 'Payment',
+        path: '/payment/:id',
+        name: 'payment',
         component: Payment,
-        props: (route) => ({ seatIds: route.query.seatIds })
+        props: true
     }
 ];
 
