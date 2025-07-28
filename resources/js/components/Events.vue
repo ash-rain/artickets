@@ -7,14 +7,17 @@
         </div>
 
         <div v-else>
-            <div v-for="event in events" :key="event.id" class="mb-8 p-6 bg-grey-300 rounded-lg shadow-md">
-                <h3 class="text-xl font-semibold mb-2">{{ event.title }}</h3>
+            <router-link v-for="event in events" :key="event.id" :to="{ name: 'event', params: { id: event.id } }">
+                <div class="mb-8 p-6 bg-grey-300 rounded-lg shadow-md">
+                    <div>
+                        <img :src="event.image" alt="Event Image" class="w-full h-64 object-cover rounded-lg mb-4">
+                    </div>
 
-                <router-link :to="{ name: 'event', params: { id: event.id } }"
-                    class="bg-green-500 hover:bg-green-600 text-black font-bold py-3 px-6 rounded-lg transition duration-200">
-                    View Seats
-                </router-link>
-            </div>
+                    <h3 class="text-xl font-semibold mb-2">{{ event.title }}</h3>
+                    <p class="text-gray-700 mb-2"><span class="font-semibold">Date:</span> {{ event.date }}</p>
+
+                </div>
+            </router-link>
         </div>
     </div>
 </template>

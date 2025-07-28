@@ -11,8 +11,8 @@
                 <button v-for="seat in section.seats" :key="seat.id" @click="toggleSeat(seat)"
                     :disabled="!!seat.payment" :class="[
                         'p-2 rounded text-center',
-                        selectedSeats.includes(seat.id) ? 'bg-green-500 text-black' : 'bg-gray-200',
-                        seat.payment ? 'bg-red-200 cursor-not-allowed' : 'hover:bg-gray-500 cursor-pointer'
+                        selectedSeats.includes(seat.id) ? 'bg-green-500 text-black outline-2 outline-black' : 'bg-gray-200',
+                        seat.payment ? 'bg-red-200 cursor-not-allowed' : 'hover:bg-green-300 cursor-pointer'
                     ]">
                     {{ seat.row }}/{{ seat.column }}
                 </button>
