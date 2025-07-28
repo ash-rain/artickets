@@ -2,17 +2,18 @@
     <div class="seats-matrix">
         <button @click="handleBuyTickets" :disabled="selectedSeats.length === 0"
             class="mb-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
-            Buy Tickets ({{ selectedSeats.length }} selected)
+            {{ t('seats_matrix.buy_tickets') }} ({{ t('seats_matrix.selected_count', { count: selectedSeats.length })
+            }})
         </button>
         <div v-for="section in event.venue.sections" :key="section.id" class="mb-8">
-            <h3 class="text-lg font-semibold mb-4">{{ section.name }}</h3>
+            <h3 class="text-lg font-semibold mb-4">{{ t('seats_matrix.section') }}: {{ section.name }}</h3>
             <div class="grid grid-cols-10 gap-2"
                 :style="{ gridTemplateColumns: `repeat(${section.columns}, minmax(0, 1fr))` }">
                 <button v-for="seat in section.seats" :key="seat.id" @click="toggleSeat(seat)"
-                    :disabled="!!seat.payment" :class="[
+                    :disabled="!!seat.payment_id" :class="[
                         'p-2 rounded text-center',
                         selectedSeats.includes(seat.id) ? 'bg-green-500 text-black outline-2 outline-black' : 'bg-gray-200',
-                        seat.payment ? 'bg-red-200 cursor-not-allowed' : 'hover:bg-green-300 cursor-pointer'
+                        seat.payment_id ? 'bg-red-200 cursor-not-allowed' : 'hover:bg-green-300 cursor-pointer'
                     ]">
                     {{ seat.row }}/{{ seat.column }}
                 </button>
@@ -30,6 +31,9 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSeatSelectionStore } from '../stores/seatSelection'
 import { Seat } from '../types/Seat'
+import { useI18n } from '../utils/i18n'
+
+const { t } = useI18n()
 import { Section } from '../types/Section'
 import { Venue } from '../types/Venue'
 import { Event } from '../types/Event'
@@ -49,7 +53,7 @@ onMounted(() => {
 })
 
 const toggleSeat = (seat: Seat) => {
-    if (seat.payment) return
+    if (seat.payment_id) return
 
     const index = selectedSeats.value.indexOf(seat.id)
     if (index === -1) {

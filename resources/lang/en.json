@@ -1,0 +1,44 @@
+{
+    "app": {
+        "title": "ARTicket",
+        "events": "Events"
+    },
+    "events": {
+        "title": "Events",
+        "loading": "Loading events...",
+        "date": "Date:"
+    },
+    "seats_matrix": {
+        "buy_tickets": "Buy Tickets",
+        "selected_count": "{{count}} selected",
+        "section": "Section"
+    },
+    "payment": {
+        "title": "Payment",
+        "selected_seats": "Selected Seats",
+        "general": "General",
+        "total": "Total:",
+        "no_seats": "No seats selected. Please go back and select seats.",
+        "form": {
+            "name": "Full Name",
+            "email": "Email",
+            "phone": "Phone",
+            "terms": "I accept the terms and conditions"
+        },
+        "buttons": {
+            "back": "&laquo; Back to Event",
+            "checkout": "Checkout"
+        },
+        "errors": {
+            "terms": "Please accept the terms and conditions",
+            "payment_failed": "Payment failed. Please try again."
+        },
+        "event": {
+            "back": "Back to Events",
+            "loading": "Loading event details...",
+            "not_found": "Event not found",
+            "date": "Date:",
+            "description": "Description:"
+        }
+    }
+}

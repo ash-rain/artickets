@@ -1,35 +1,36 @@
 <template>
     <div class="payment-container">
-        <h2 class="text-2xl font-bold mb-6">Payment</h2>
+        <h2 class="text-2xl font-bold mb-6">{{ t('payment.title') }}</h2>
 
         <div v-if="selectedSeats.length > 0" class="mb-8">
-            <h3 class="text-lg font-semibold mb-4">Selected Seats</h3>
+            <h3 class="text-lg font-semibold mb-4">{{ t('payment.selected_seats') }}</h3>
             <ul class="flex flex-col gap-2 mb-6">
                 <li v-for="seat in selectedSeats" :key="seat.id" class="bg-gray-100 p-2 rounded">
-                    {{ seat.section?.name || 'General' }} ({{ seat.section.price.toFixed(2) }}) - Row {{ seat.row }},
-                    Seat {{
+                    {{ seat.section?.name || t('payment.general') }} ({{ seat.section.price.toFixed(2) }}) - {{
+                        t('payment.row') }} {{ seat.row }},
+                    {{ t('payment.seat') }} {{
                         seat.column
                     }}
                 </li>
             </ul>
-            <p class="text-xl font-semibold">Total: ${{ totalPrice.toFixed(2) }}</p>
+            <p class="text-xl font-semibold">{{ t('payment.total') }} ${{ totalPrice.toFixed(2) }}</p>
         </div>
         <div v-else class="mb-8">
-            <p>No seats selected. Please go back and select seats.</p>
+            <p>{{ t('payment.no_seats') }}</p>
         </div>
 
         <form @submit.prevent="handleCheckout" class="mb-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
-                    <label for="name" class="block mb-2">Full Name</label>
+                    <label for="name" class="block mb-2">{{ t('payment.form.name') }}</label>
                     <input v-model="form.name" type="text" id="name" required class="w-full p-2 border rounded">
                 </div>
                 <div>
-                    <label for="email" class="block mb-2">Email</label>
+                    <label for="email" class="block mb-2">{{ t('payment.form.email') }}</label>
                     <input v-model="form.email" type="email" id="email" required class="w-full p-2 border rounded">
                 </div>
                 <div>
-                    <label for="phone" class="block mb-2">Phone</label>
+                    <label for="phone" class="block mb-2">{{ t('payment.form.phone') }}</label>
                     <input v-model="form.phone" type="tel" id="phone" required class="w-full p-2 border rounded">
                 </div>
             </div>
@@ -38,18 +39,18 @@
                 <div class="flex items-center">
                     <input v-model="form.termsAccepted" type="checkbox" id="terms" required
                         class="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                    <label for="terms" class="text-sm">I accept the terms and conditions</label>
+                    <label for="terms" class="text-sm">{{ t('payment.form.terms') }}</label>
                 </div>
             </div>
 
             <div class="flex gap-4">
                 <button type="button" @click="router.go(-1)"
                     class="bg-gray-500 text-white px-6 py-3 rounded hover:bg-gray-600 transition">
-                    &laquo; Back to Event
+                    {{ t('payment.buttons.back') }}
                 </button>
                 <button type="submit" :disabled="selectedSeats.length === 0"
                     class="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-500 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
-                    Checkout
+                    {{ t('payment.buttons.checkout') }}
                 </button>
             </div>
         </form>
@@ -62,6 +63,9 @@ import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import { useSeatSelectionStore } from '../stores/seatSelection'
 import { Seat } from '../types/Seat'
+import { useI18n } from '../utils/i18n'
+
+const { t } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
@@ -91,7 +95,7 @@ onMounted(async () => {
 
 const handleCheckout = async () => {
     if (!form.value.termsAccepted) {
-        alert('Please accept the terms and conditions')
+        alert(t('payment.errors.terms'))
         return
     }
 
@@ -107,7 +111,7 @@ const handleCheckout = async () => {
         router.push({ name: 'events' })
     } catch (error) {
         console.error('Payment failed:', error)
-        alert('Payment failed. Please try again. ' + error.message)
+        alert(t('payment.errors.payment_failed') + (error instanceof Error ? error.message : ''))
     }
 }
 </script>
