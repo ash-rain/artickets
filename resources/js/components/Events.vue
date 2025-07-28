@@ -6,9 +6,9 @@
             <p>{{ t('events.loading') }}</p>
         </div>
 
-        <div v-else>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" v-else>
             <router-link v-for="event in events" :key="event.id" :to="{ name: 'event', params: { id: event.id } }">
-                <div class="mb-8 p-6 bg-grey-300 rounded-lg shadow-md">
+                <div class="mb-8 p-6 bg-gray-300 hover:bg-green-300 rounded-lg shadow-md">
                     <div>
                         <img :src="event.image" alt="Event Image" class="w-full h-64 object-cover rounded-lg mb-4">
                     </div>

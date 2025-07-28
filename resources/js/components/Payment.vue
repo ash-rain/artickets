@@ -4,16 +4,21 @@
 
         <div v-if="selectedSeats.length > 0" class="mb-8">
             <h3 class="text-lg font-semibold mb-4">{{ t('payment.selected_seats') }}</h3>
-            <ul class="flex flex-col gap-2 mb-6">
-                <li v-for="seat in selectedSeats" :key="seat.id" class="bg-gray-100 p-2 rounded">
-                    {{ seat.section?.name || t('payment.general') }} ({{ seat.section.price.toFixed(2) }}) - {{
-                        t('payment.row') }} {{ seat.row }},
-                    {{ t('payment.seat') }} {{
-                        seat.column
-                    }}
-                </li>
-            </ul>
-            <p class="text-xl font-semibold">{{ t('payment.total') }} ${{ totalPrice.toFixed(2) }}</p>
+            <table class="mb-6 outline-dashed outline-2 outline-black table-auto w-full">
+                <tr v-for="seat in selectedSeats" :key="seat.id"
+                    class="bg-gray-100 p-4 rounded border-b border-dashed border-black">
+                    <td class="p-4">{{ seat.section?.name || t('payment.general') }}
+                        ({{ seat.section?.price.toFixed(2) }} &euro;)
+                    </td>
+                    <td class="text-right p-4">
+                        {{ t('payment.row') }} {{ seat.row }}
+                    </td>
+                    <td class="text-right p-4">
+                        {{ t('payment.seat') }} {{ seat.column }}
+                    </td>
+                </tr>
+            </table>
+            <p class="text-xl font-semibold">{{ t('payment.total') }} {{ totalPrice.toFixed(2) }} &euro;</p>
         </div>
         <div v-else class="mb-8">
             <p>{{ t('payment.no_seats') }}</p>

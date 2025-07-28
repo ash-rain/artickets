@@ -3,7 +3,7 @@
         <div class="mb-6">
             <router-link to="/" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600 transition">
                 &laquo;
-                {{ t('event.back') }}
+                {{ t('payment.event.back') }}
             </router-link>
         </div>
 
@@ -14,8 +14,9 @@
         <h2 class="text-2xl font-bold mb-4">{{ event.title }}</h2>
 
         <div class="mb-4">
-            <p class="text-gray-700"><span class="font-semibold">{{ t('event.date') }}</span> {{ event.date }}</p>
-            <p class="text-gray-700"><span class="font-semibold">{{ t('event.description') }}</span> {{
+            <p class="text-gray-700"><span class="font-semibold">{{ t('payment.event.date') }}</span> {{ event.date }}
+            </p>
+            <p class="text-gray-700"><span class="font-semibold">{{ t('payment.event.description') }}</span> {{
                 event.description }}</p>
         </div>
 

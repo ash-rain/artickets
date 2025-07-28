@@ -19,6 +19,8 @@
         "general": "General",
         "total": "Total:",
         "no_seats": "No seats selected. Please go back and select seats.",
+        "row": "Row",
+        "seat": "Seat",
         "form": {
             "name": "Full Name",
             "email": "Email",
@@ -26,7 +28,7 @@
             "terms": "I accept the terms and conditions"
         },
         "buttons": {
-            "back": "&laquo; Back to Event",
+            "back": "Back to Event",
             "checkout": "Checkout"
         },
         "errors": {

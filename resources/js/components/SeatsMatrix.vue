@@ -1,26 +1,29 @@
 <template>
     <div class="seats-matrix">
         <button @click="handleBuyTickets" :disabled="selectedSeats.length === 0"
-            class="mb-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
+            class="mb-4 w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
             {{ t('seats_matrix.buy_tickets') }} ({{ t('seats_matrix.selected_count', { count: selectedSeats.length })
             }})
         </button>
         <div v-for="section in event.venue.sections" :key="section.id" class="mb-8">
-            <h3 class="text-lg font-semibold mb-4">{{ t('seats_matrix.section') }}: {{ section.name }}</h3>
-            <div class="grid grid-cols-10 gap-2"
+            <h3 class="text-lg font-semibold mb-4">
+                {{ t('seats_matrix.section') }}: {{ section.name }}
+                <p class="text-xl font-semibold text-green-600">{{ section.price.toFixed(2) }} &euro;</p>
+            </h3>
+            <div class="grid grid-cols-10 gap-1"
                 :style="{ gridTemplateColumns: `repeat(${section.columns}, minmax(0, 1fr))` }">
                 <button v-for="seat in section.seats" :key="seat.id" @click="toggleSeat(seat)"
-                    :disabled="!!seat.payment_id" :class="[
-                        'p-2 rounded text-center',
+                    :disabled="!!seat.payment" :class="[
+                        'py-2 rounded text-center',
                         selectedSeats.includes(seat.id) ? 'bg-green-500 text-black outline-2 outline-black' : 'bg-gray-200',
-                        seat.payment_id ? 'bg-red-200 cursor-not-allowed' : 'hover:bg-green-300 cursor-pointer'
+                        seat.payment ? 'bg-red-200 cursor-not-allowed' : 'hover:bg-green-300 cursor-pointer'
                     ]">
                     {{ seat.row }}/{{ seat.column }}
                 </button>
             </div>
         </div>
         <button @click="handleBuyTickets" :disabled="selectedSeats.length === 0"
-            class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
+            class="mt-4 w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
             Buy Tickets ({{ selectedSeats.length }} selected)
         </button>
     </div>
@@ -70,7 +73,7 @@ const toggleSeat = (seat: Seat) => {
 
 const handleBuyTickets = () => {
     if (selectedSeats.value.length > 0) {
-        router.push(`/payment/${props.event.id}`)
+        router.push(`/${router.currentRoute.value.params.lang}/payment/${props.event.id}`)
     }
 }
 </script>
