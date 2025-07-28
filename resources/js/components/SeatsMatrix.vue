@@ -1,5 +1,9 @@
 <template>
     <div class="seats-matrix">
+        <button @click="handleBuyTickets" :disabled="selectedSeats.length === 0"
+            class="mb-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
+            Buy Tickets ({{ selectedSeats.length }} selected)
+        </button>
         <div v-for="section in event.venue.sections" :key="section.id" class="mb-8">
             <h3 class="text-lg font-semibold mb-4">{{ section.name }}</h3>
             <div class="grid grid-cols-10 gap-2"
@@ -24,6 +28,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useSeatSelectionStore } from '../stores/seatSelection'
 import { Seat } from '../types/Seat'
 import { Section } from '../types/Section'
 import { Venue } from '../types/Venue'
@@ -34,12 +39,12 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
+const seatStore = useSeatSelectionStore()
 const selectedSeats = ref<number[]>([])
 
 onMounted(() => {
-    const savedSeats = localStorage.getItem(`event_${props.event.id}_seats`)
-    if (savedSeats) {
-        selectedSeats.value = JSON.parse(savedSeats)
+    if (seatStore.eventId === props.event.id) {
+        selectedSeats.value = seatStore.selectedSeats.map(seat => seat.id)
     }
 })
 
@@ -52,15 +57,16 @@ const toggleSeat = (seat: Seat) => {
     } else {
         selectedSeats.value.splice(index, 1)
     }
-    localStorage.setItem(`event_${props.event.id}_seats`, JSON.stringify(selectedSeats.value))
+
+    const seats = props.event.venue.sections
+        .flatMap((section: Section) => section.seats)
+        .filter((seat: Seat) => selectedSeats.value.includes(seat.id))
+    seatStore.setSeats(seats, props.event.id)
 }
 
 const handleBuyTickets = () => {
     if (selectedSeats.value.length > 0) {
-        router.push({
-            path: `/payment/${props.event.id}`,
-            query: { seats: selectedSeats.value.join(',') }
-        })
+        router.push(`/payment/${props.event.id}`)
     }
 }
 </script>

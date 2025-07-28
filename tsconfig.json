@@ -4,7 +4,7 @@
         "module": "ESNext",
         "strict": true,
         "lib": [
-            "ES2016",
+            "ES2019",
             "DOM"
         ],
         "jsx": "preserve",

@@ -26,31 +26,22 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import { useSeatSelectionStore } from '../stores/seatSelection'
 import { Seat } from '../types/Seat'
 
 const route = useRoute()
 const router = useRouter()
+const seatStore = useSeatSelectionStore()
 const selectedSeats = ref<Seat[]>([])
 const totalPrice = ref(0)
 const loading = ref(true)
 
 onMounted(async () => {
     try {
-        // Try to get seats from localStorage first
-        const savedSeats = localStorage.getItem(`event_${route.params.id}_seats`)
-        if (savedSeats) {
-            const seatIds = JSON.parse(savedSeats)
-            if (seatIds.length > 0) {
-                const response = await axios.get(`/api/events/${route.params.id}/seats`, {
-                    params: { ids: seatIds.join(',') }
-                })
-                selectedSeats.value = response.data
-                totalPrice.value = selectedSeats.value.length * 25 // $25 per seat
-            }
-        }
-
-        // Fallback to URL params if localStorage is empty
-        if (selectedSeats.value.length === 0 && route.query.seats) {
+        if (seatStore.eventId === Number(route.params.id)) {
+            selectedSeats.value = seatStore.selectedSeats
+            totalPrice.value = seatStore.totalPrice
+        } else if (route.query.seats) {
             const seatIds = route.query.seats.toString().split(',').map(Number)
             if (seatIds.length > 0) {
                 const response = await axios.get(`/api/events/${route.params.id}/seats`, {
@@ -73,8 +64,7 @@ const handleCheckout = async () => {
             event_id: route.params.id,
             seat_ids: selectedSeats.value.map(seat => seat.id)
         })
-        // Clear selected seats from localStorage after successful payment
-        localStorage.removeItem(`event_${route.params.id}_seats`)
+        seatStore.clearSeats()
         router.push({ name: 'events' })
     } catch (error) {
         console.error('Payment failed:', error)
