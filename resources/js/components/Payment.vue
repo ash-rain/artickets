@@ -34,6 +34,14 @@
                 </div>
             </div>
 
+            <div class="mb-6">
+                <div class="flex items-center">
+                    <input v-model="form.termsAccepted" type="checkbox" id="terms" required
+                        class="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                    <label for="terms" class="text-sm">I accept the terms and conditions</label>
+                </div>
+            </div>
+
             <div class="flex gap-4">
                 <button type="button" @click="router.go(-1)"
                     class="bg-gray-500 text-white px-6 py-3 rounded hover:bg-gray-600 transition">
@@ -64,7 +72,8 @@ const loading = ref(true)
 const form = ref({
     name: '',
     email: '',
-    phone: ''
+    phone: '',
+    termsAccepted: false
 })
 
 onMounted(async () => {
@@ -81,6 +90,11 @@ onMounted(async () => {
 })
 
 const handleCheckout = async () => {
+    if (!form.value.termsAccepted) {
+        alert('Please accept the terms and conditions')
+        return
+    }
+
     try {
         const response = await axios.post('/api/payments', {
             event_id: route.params.id,
