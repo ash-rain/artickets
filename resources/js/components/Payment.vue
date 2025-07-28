@@ -45,10 +45,10 @@
             <div class="flex gap-4">
                 <button type="button" @click="router.go(-1)"
                     class="bg-gray-500 text-white px-6 py-3 rounded hover:bg-gray-600 transition">
-                    Back to Event
+                    &laquo; Back to Event
                 </button>
                 <button type="submit" :disabled="selectedSeats.length === 0"
-                    class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    class="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-500 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
                     Checkout
                 </button>
             </div>
