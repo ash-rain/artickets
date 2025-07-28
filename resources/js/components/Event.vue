@@ -36,25 +36,8 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import SeatsMatrix from './SeatsMatrix.vue'
-
-interface Event {
-    id: number
-    title: string
-    date: string
-    description: string
-    image: string
-    sections: Array<{
-        id: number
-        name: string
-        columns: number
-        seats: Array<{
-            id: number
-            row: string
-            column: number
-            payment_id: number | null
-        }>
-    }>
-}
+import { Event } from '../types/Event'
+import { Venue } from '../types/Venue'
 
 export default {
     name: 'Event',

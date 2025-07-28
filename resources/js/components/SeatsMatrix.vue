@@ -22,27 +22,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-
-interface Seat {
-    id: number
-    row: string
-    column: number
-    payment_id: number | null
-}
-
-interface Section {
-    id: number
-    name: string
-    columns: number
-    seats: Seat[]
-}
-
-interface Event {
-    id: number
-    sections: Section[]
-}
+import { Seat } from '../types/Seat'
+import { Section } from '../types/Section'
+import { Venue } from '../types/Venue'
+import { Event } from '../types/Event'
 
 const props = defineProps<{
     event: Event
@@ -50,6 +35,13 @@ const props = defineProps<{
 
 const router = useRouter()
 const selectedSeats = ref<number[]>([])
+
+onMounted(() => {
+    const savedSeats = localStorage.getItem(`event_${props.event.id}_seats`)
+    if (savedSeats) {
+        selectedSeats.value = JSON.parse(savedSeats)
+    }
+})
 
 const toggleSeat = (seat: Seat) => {
     if (seat.payment_id) return
@@ -60,6 +52,7 @@ const toggleSeat = (seat: Seat) => {
     } else {
         selectedSeats.value.splice(index, 1)
     }
+    localStorage.setItem(`event_${props.event.id}_seats`, JSON.stringify(selectedSeats.value))
 }
 
 const handleBuyTickets = () => {
