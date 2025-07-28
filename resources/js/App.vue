@@ -1,6 +1,6 @@
 <template>
-    <div class="min-h-screen bg-gray-100">
-        <header class="bg-black text-white py-6 px-4">
+    <div class="min-h-screen">
+        <header class="bg-black text-white">
             <div class="container text-shadow-md mx-auto flex justify-between items-center">
                 <h1 class="text-2xl font-bold">
                     <router-link to="/" class="hover:bg-black/50 p-2">
@@ -18,7 +18,7 @@
             </div>
         </header>
 
-        <main class="container mx-auto py-8 px-4">
+        <main>
             <router-view></router-view>
         </main>
     </div>

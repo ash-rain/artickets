@@ -1,5 +1,5 @@
 <template>
-    <div class="payment-container">
+    <div class="payment-container container mx-auto pt-4">
         <h2 class="text-2xl font-bold mb-6">{{ t('payment.title') }}</h2>
 
         <div v-if="selectedSeats.length > 0" class="mb-8">

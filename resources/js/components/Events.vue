@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container mx-auto pt-4">
         <h2 class="text-2xl font-bold mb-6">{{ t('events.title') }}</h2>
 
         <div v-if="loading" class="text-center py-8">
