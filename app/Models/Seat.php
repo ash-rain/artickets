@@ -8,6 +8,8 @@ class Seat extends Model
 {
     protected $fillable = ['section_id', 'row', 'column'];
 
+    protected $with = ['section', 'payment'];
+
     public function section()
     {
         return $this->belongsTo(Section::class);

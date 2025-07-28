@@ -9,10 +9,10 @@
             <div class="grid grid-cols-10 gap-2"
                 :style="{ gridTemplateColumns: `repeat(${section.columns}, minmax(0, 1fr))` }">
                 <button v-for="seat in section.seats" :key="seat.id" @click="toggleSeat(seat)"
-                    :disabled="!!seat.payment_id" :class="[
+                    :disabled="!!seat.payment" :class="[
                         'p-2 rounded text-center',
                         selectedSeats.includes(seat.id) ? 'bg-green-500 text-black' : 'bg-gray-200',
-                        seat.payment_id ? 'bg-red-200 cursor-not-allowed' : 'hover:bg-gray-500 cursor-pointer'
+                        seat.payment ? 'bg-red-200 cursor-not-allowed' : 'hover:bg-gray-500 cursor-pointer'
                     ]">
                     {{ seat.row }}/{{ seat.column }}
                 </button>
@@ -49,7 +49,7 @@ onMounted(() => {
 })
 
 const toggleSeat = (seat: Seat) => {
-    if (seat.payment_id) return
+    if (seat.payment) return
 
     const index = selectedSeats.value.indexOf(seat.id)
     if (index === -1) {

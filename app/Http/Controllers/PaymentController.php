@@ -15,10 +15,9 @@ class PaymentController extends Controller
             'event_id' => 'required|exists:events,id',
             'seat_ids' => 'required|array',
             'seat_ids.*' => 'exists:seats,id',
-            'card_number' => 'required|string',
-            'expiration' => 'required|string',
-            'cvv' => 'required|string',
+            'name' => 'required|string',
             'email' => 'required|email',
+            'phone' => 'required|string',
         ]);
 
         try {
@@ -26,7 +25,6 @@ class PaymentController extends Controller
 
             // Check seat availability
             $seats = Seat::whereIn('id', $request->seat_ids)
-                ->where('available', true)
                 ->lockForUpdate()
                 ->get();
 
@@ -37,28 +35,28 @@ class PaymentController extends Controller
                 ], 400);
             }
 
-            // Create payment record
-            $payment = Payment::create([
-                'event_id' => $request->event_id,
-                'amount' => $seats->sum('price'),
-                'card_number' => $request->card_number,
-                'expiration' => $request->expiration,
-                'cvv' => $request->cvv,
-                'email' => $request->email,
-            ]);
+            // Create payment records
+            foreach ($seats as $seat) {
+                if ($seat->payment) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'One or more seats are already booked'
+                    ], 400);
+                }
 
-            // Update seats to mark as unavailable
-            Seat::whereIn('id', $request->seat_ids)->update([
-                'available' => false,
-                'payment_id' => $payment->id
-            ]);
+                Payment::create([
+                    'seat_id' => $seat->id,
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                ]);
+            }
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Payment processed successfully',
-                'payment_id' => $payment->id
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
