@@ -9,7 +9,7 @@
                 Back to Events
             </router-link>
             <router-link :to="`/payment/${event.id}`"
-                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
                 Buy Tickets
             </router-link>
         </div>
@@ -21,7 +21,7 @@
             <p class="text-gray-700"><span class="font-semibold">Description:</span> {{ event.description }}</p>
         </div>
 
-        <EventSeating :event="event" />
+        <SeatsMatrix :event="event" />
     </div>
     <div v-else-if="loading" class="text-center py-8">
         <p>Loading event details...</p>
@@ -32,15 +32,38 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
+import SeatsMatrix from './SeatsMatrix.vue'
 
-export default defineComponent({
+interface Event {
+    id: number
+    title: string
+    date: string
+    description: string
+    image: string
+    sections: Array<{
+        id: number
+        name: string
+        columns: number
+        seats: Array<{
+            id: number
+            row: string
+            column: number
+            payment_id: number | null
+        }>
+    }>
+}
+
+export default {
     name: 'Event',
+    components: {
+        SeatsMatrix
+    },
     setup() {
         const route = useRoute()
-        const event = ref(null)
+        const event = ref<Event | null>(null)
         const loading = ref(true)
 
         onMounted(async () => {
@@ -59,5 +82,5 @@ export default defineComponent({
             loading
         }
     }
-})
+}
 </script>

@@ -5,15 +5,7 @@
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <div class="mb-4">
                 <label class="block text-gray-700 font-semibold mb-2">Select Seats</label>
-                <div class="grid grid-cols-5 gap-2">
-                    <div v-for="seat in event.venue.sections[0].seats" :key="seat.id"
-                        class="p-2 border rounded text-center cursor-pointer hover:bg-gray-100" :class="{
-                            'bg-green-200': selectedSeats.includes(seat.id),
-                            'bg-red-200': !seat.available
-                        }" @click="toggleSeat(seat)">
-                        Seat {{ seat.row }}{{ seat.number }}
-                    </div>
-                </div>
+                <SeatsMatrix :event="event" />
             </div>
 
             <div class="mb-4">
