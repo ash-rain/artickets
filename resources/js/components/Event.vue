@@ -3,13 +3,8 @@
         <header class="mb-6">
             <img :src="event.image" alt="Event Image" class="w-full h-64 object-cover rounded-lg mb-4">
         </header>
-        <h2 class="text-2xl font-bold mb-4">{{ event.title }}</h2>
-        <div class="mb-4">
-            <p class="text-gray-700"><span class="font-semibold">Date:</span> {{ event.date }}</p>
-            <p class="text-gray-700"><span class="font-semibold">Description:</span> {{ event.description }}</p>
-        </div>
 
-        <div class="mt-6">
+        <div class="my-6">
             <router-link to="/" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600 transition">
                 Back to Events
             </router-link>
@@ -17,6 +12,13 @@
                 class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
                 Buy Tickets
             </router-link>
+        </div>
+
+        <h2 class="text-2xl font-bold mb-4">{{ event.title }}</h2>
+
+        <div class="mb-4">
+            <p class="text-gray-700"><span class="font-semibold">Date:</span> {{ event.date }}</p>
+            <p class="text-gray-700"><span class="font-semibold">Description:</span> {{ event.description }}</p>
         </div>
 
         <EventSeating :event="event" />

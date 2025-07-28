@@ -7,11 +7,11 @@
         </div>
 
         <div v-else>
-            <div v-for="event in events" :key="event.id" class="mb-8 p-6 bg-white rounded-lg shadow-md">
+            <div v-for="event in events" :key="event.id" class="mb-8 p-6 bg-grey-300 rounded-lg shadow-md">
                 <h3 class="text-xl font-semibold mb-2">{{ event.title }}</h3>
 
                 <router-link :to="{ name: 'Event', params: { id: event.id } }"
-                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                    class="bg-green-500 hover:bg-green-600 text-black font-bold py-3 px-6 rounded-lg transition duration-200">
                     View Seats
                 </router-link>
             </div>
